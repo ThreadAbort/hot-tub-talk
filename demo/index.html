@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛁 Hot Tub Talk Demo</title>
+    <link rel="stylesheet" href="css/demo.css">
+</head>
+<body>
+    <header>
+        <h1>🛁 Hot Tub Talk</h1>
+        <p>Dive into some deep thoughts...</p>
+    </header>
+
+    <main>
+        <section class="demo-section">
+            <h2>✨ Basic Example</h2>
+            <hot-tub-talk class="steamy starry jets">
+                What if clouds are just the Earth's thoughts? 🤔
+            </hot-tub-talk>
+        </section>
+
+        <section class="demo-section">
+            <h2>🌙 Night Mode with Stars</h2>
+            <hot-tub-talk class="starry-demo starry">
+                Do stars dream when we're not looking at them? ⭐
+                Maybe that's what shooting stars really are!
+            </hot-tub-talk>
+        </section>
+
+        <section class="demo-section">
+            <h2>💨 Steam Effects</h2>
+            <hot-tub-talk class="steamy">
+                Is steam just water having an out-of-body experience? 💭
+                Think about it... it's water ascending to a higher state of being!
+            </hot-tub-talk>
+        </section>
+
+        <section class="demo-section">
+            <h2>🫧 Bubbles & Jets</h2>
+            <hot-tub-talk class="bubbly jets-active steam-active">
+                Life is like a hot tub...
+                - Sometimes you need to make waves 🌊
+                - Other times you just need to soak 😌
+                - And occasionally you need to check the pH 🧪
+            </hot-tub-talk>
+        </section>
+
+        <section class="demo-section interactive">
+            <h2>🖱️ Interactive Demo</h2>
+            <hot-tub-talk class="interactive">
+                Move your mouse here to create ripples!
+                Touch on mobile devices works too! 📱
+            </hot-tub-talk>
+        </section>
+
+        <section class="demo-section">
+            <h2>⚙️ Configuration Example</h2>
+            <hot-tub-talk id="configDemo">
+                This hot tub is fully configured!
+                Check the console for performance stats.
+            </hot-tub-talk>
+            <div class="config-panel">
+                <h3>Current Configuration:</h3>
+                <pre><code>
+{
+    resolution: 512,
+    dropRadius: 15,
+    perturbance: 0.02,
+    interactive: true,
+    crossOrigin: '',
+    useHardwareAcceleration: true
+}
+                </code></pre>
+            </div>
+        </section>
+
+        <section class="demo-section">
+            <h2>⚛️ React Integration</h2>
+            <div id="react-demo"></div>
+            <div class="code-example">
+                <h3>React Usage Example:</h3>
+                <pre><code>
+import { HotTubTalk } from 'hot-tub-talk';
+
+function App() {
+    return (
+        &lt;HotTubTalk&gt;
+            Is consciousness just a simulation? 🤔
+            Let's discuss...
+        &lt;/HotTubTalk&gt;
+    );
+}
+                </code></pre>
+            </div>
+        </section>
+
+        <section class="demo-section">
+            <h2>🎨 Styling Example</h2>
+            <hot-tub-talk class="custom-styled">
+                Style me however you like!
+                Check the CSS tab for examples.
+            </hot-tub-talk>
+            <div class="code-example">
+                <h3>CSS Custom Properties:</h3>
+                <pre><code>
+hot-tub-talk.custom-styled {
+    --hot-tub-talk-background: rgba(30, 136, 229, 0.15);
+    --hot-tub-talk-text-color: white;
+    --hot-tub-talk-ripple-color: rgba(255, 255, 255, 0.2);
+    --hot-tub-talk-steam-opacity: 0.4;
+    --hot-tub-talk-border-radius: 20px;
+}
+                </code></pre>
+            </div>
+        </section>
+
+        <section class="demo-section fallback">
+            <h2>🔄 Fallback Mode</h2>
+            <hot-tub-talk class="fallback-mode">
+                No WebGL? No problem!
+                We've got smooth CSS fallbacks.
+            </hot-tub-talk>
+            <div class="fallback-notice">
+                Note: This section demonstrates the CSS-only fallback mode when WebGL is not available.
+            </div>
+        </section>
+    </main>
+
+    <!-- Demo controls -->
+    <div class="demo-controls">
+        <button id="toggleNight">🌙 Toggle Night Mode</button>
+        <button id="toggleSteam">💨 Toggle Steam</button>
+        <button id="toggleJets">🌀 Toggle Jets</button>
+        <div class="slider-control">
+            <label for="rippleIntensity">🌊 Ripple Intensity</label>
+            <input type="range" id="rippleIntensity" min="0" max="100" value="50">
+        </div>
+        <div class="performance-stats">
+            <span>FPS: <span id="fpsCounter">60</span></span>
+        </div>
+    </div>
+
+    <footer>
+        <p>Made with 💙 by Hue & Aye</p>
+        <p>Special thanks to Trisha from Accounting for her endless enthusiasm!</p>
+        <p><a href="https://github.com/yourusername/hot-tub-talk">GitHub</a> | <a href="https://hot-tub-talk.docs.com">Documentation</a></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/demo.js"></script>
+</body>
+</html>

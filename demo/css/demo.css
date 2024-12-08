@@ -1,0 +1,390 @@
+/* Demo styles for Hot Tub Talk
+   Making our demo look as relaxing as a real hot tub! 🛁 */
+
+:root {
+    --primary-color: #1e88e5;
+    --secondary-color: #1976d2;
+    --background-color: #f5f5f5;
+    --text-color: #333;
+    --night-bg: #1a237e;
+    --night-text: #fff;
+    --code-bg: #f8f9fa;
+    --code-border: #e9ecef;
+    --section-padding: 2rem;
+}
+
+/* Base styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s ease;
+}
+
+/* Header styles */
+header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: var(--section-padding);
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 3rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Main content */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Demo sections */
+.demo-section {
+    margin: 2rem auto;
+    max-width: 800px;
+    padding: var(--section-padding);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.demo-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.demo-section h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+/* Code examples */
+.code-example {
+    margin-top: 1.5rem;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.code-example h3 {
+    margin-top: 0;
+    color: var(--secondary-color);
+}
+
+pre {
+    margin: 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+}
+
+code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9rem;
+}
+
+/* Configuration panel */
+.config-panel {
+    margin-top: 1.5rem;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.config-panel h3 {
+    margin-top: 0;
+    color: var(--secondary-color);
+}
+
+/* Night mode section and body */
+body.night-mode {
+    background: #121212;
+    color: var(--night-text);
+}
+
+body.night-mode .demo-section {
+    background: #1e1e1e;
+    color: var(--night-text);
+}
+
+body.night-mode .demo-controls {
+    background: #1e1e1e;
+    color: var(--night-text);
+}
+
+body.night-mode .code-example,
+body.night-mode .config-panel {
+    background: #2d2d2d;
+    border-color: #404040;
+}
+
+body.night-mode pre {
+    background: #1e1e1e;
+    color: #e0e0e0;
+}
+
+body.night-mode header {
+    background: linear-gradient(135deg, #1a237e, #0d47a1);
+}
+
+/* Hot Tub Talk component customization */
+hot-tub-talk {
+    display: block;
+    padding: 2rem;
+    margin: 1rem 0;
+    border-radius: 12px;
+    background: rgba(30, 136, 229, 0.15);
+    min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+hot-tub-talk.starry {
+    --hot-tub-talk-background: rgba(26, 35, 126, 0.9);
+    --hot-tub-talk-text-color: white;
+}
+
+hot-tub-talk.steamy {
+    --hot-tub-talk-steam-opacity: 0.6;
+}
+
+hot-tub-talk.bubbly {
+    --hot-tub-talk-bubble-size: 1.2;
+}
+
+hot-tub-talk.jets {
+    --hot-tub-talk-jets-enabled: true;
+}
+
+/* Custom styled example */
+hot-tub-talk.custom-styled {
+    --hot-tub-talk-background: rgba(30, 136, 229, 0.15);
+    --hot-tub-talk-text-color: white;
+    --hot-tub-talk-ripple-color: rgba(255, 255, 255, 0.2);
+    --hot-tub-talk-steam-opacity: 0.4;
+    --hot-tub-talk-border-radius: 20px;
+    background: linear-gradient(135deg, #00bcd4, #673ab7);
+}
+
+
+/* Fallback styles */
+hot-tub-talk.fallback-mode {
+    background: linear-gradient(to right, rgba(33, 150, 243, 0.8), rgba(3, 169, 244, 0.8));
+    animation: gentleWave 3s ease-in-out infinite;
+}
+
+.fallback-notice {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 0.25rem;
+    color: #856404;
+}
+
+/* Demo controls */
+.demo-controls {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.demo-controls button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.demo-controls button:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.slider-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.slider-control label {
+    font-size: 0.9rem;
+}
+
+.demo-controls input[type="range"] {
+    width: 100%;
+    margin: 0.5rem 0;
+}
+
+.performance-stats {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 0.25rem;
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    margin-top: 4rem;
+    transition: background-color 0.3s ease;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    margin: 0 0.5rem;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+body.night-mode footer {
+    background: #1e1e1e;
+    color: var(--night-text);
+}
+
+body.night-mode footer a {
+    color: #64b5f6;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes gentleWave {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Steam animation */
+@keyframes steam {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-20px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Bubble animation */
+@keyframes bubble {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-30px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .demo-controls {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        border-radius: 0.5rem 0.5rem 0 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .demo-controls button {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .slider-control {
+        width: 100%;
+        padding: 0.5rem;
+    }
+
+    .code-example pre {
+        font-size: 0.8rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #121212;
+        --text-color: #fff;
+        --code-bg: #2d2d2d;
+        --code-border: #404040;
+    }
+
+    .demo-section {
+        background: #1e1e1e;
+    }
+
+    .demo-controls {
+        background: #1e1e1e;
+        color: var(--night-text);
+    }
+
+    pre {
+        background: #1e1e1e;
+        color: #e0e0e0;
+    }
+
+    footer {
+        background: #1e1e1e;
+    }
+
+    .fallback-notice {
+        background: #2c2c2c;
+        border-color: #404040;
+        color: #ffd54f;
+    }
+}

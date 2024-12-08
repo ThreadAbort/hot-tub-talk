@@ -1,6 +1,6 @@
 # Contributing to Hot Tub Talk
 
-First off, thank you for considering contributing to Hot Tub Talk! 🎉 
+First off, thank you for considering contributing to Hot Tub Talk! 🎉
 
 ## Code of Conduct
 
@@ -40,16 +40,19 @@ If you have a suggestion for the project, we'd love to hear it! Enhancement sugg
 ## Development Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/hot-tub-talk.git
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -98,6 +101,6 @@ Don't hesitate to ask questions! You can:
 * Join our Discord
 * Send an email to maintainers
 
-Thank you for contributing! 🎉 
+Thank you for contributing! 🎉
 
-Remember: Every contribution, no matter how small, makes a difference! 💫 
+Remember: Every contribution, no matter how small, makes a difference! 💫

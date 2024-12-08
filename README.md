@@ -29,24 +29,27 @@ npm install hot-tub-talk
 </script>
 
 <!-- Use the component -->
-<htt>
+<hot-tub-talk>
   Is the universe a simulation? 🌌
   Here's the evidence:
   - The Mandela Effect 🤯
   - Déjà vu 🔄
   - Glitches in the Matrix 🐱‍💻
-</htt>
+</hot-tub-talk>
 ```
 
 ### In Markdown
 
-\`\`\`htt
+```markdown
+
+```hot-tub-talk
 What if our dreams are glimpses into parallel universes? 😴
 Evidence:
+
 - That weird dream where you're late for a test 📚
 - Flying dreams (past lives as birds?) 🦅
 - Dream characters with their own agendas 🤔
-\`\`\`
+```
 
 ### In React
 
@@ -77,7 +80,7 @@ const options = {
 };
 
 // Apply to an existing element
-document.querySelector('htt').configure(options);
+document.querySelector('hot-tub-talk').configure(options);
 ```
 
 ## 🎨 Styling
@@ -85,12 +88,12 @@ document.querySelector('htt').configure(options);
 The component uses CSS custom properties for easy styling:
 
 ```css
-htt {
-  --htt-background: rgba(30, 136, 229, 0.15);
-  --htt-text-color: white;
-  --htt-ripple-color: rgba(255, 255, 255, 0.2);
-  --htt-steam-opacity: 0.4;
-  --htt-border-radius: 20px;
+hot-tub-talk {
+  --hot-tub-talk-background: rgba(30, 136, 229, 0.15);
+  --hot-tub-talk-text-color: white;
+  --hot-tub-talk-ripple-color: rgba(255, 255, 255, 0.2);
+  --hot-tub-talk-steam-opacity: 0.4;
+  --hot-tub-talk-border-radius: 20px;
 }
 ```
 

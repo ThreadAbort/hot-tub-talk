@@ -1,28 +1,28 @@
-# Hot Tub Talk - Project Context
+# Hot Tub Talk Project Context
 
-Hey future Hue & Aye! 👋
-
-This is our awesome Hot Tub Talk component - a fun way to display text with relaxing water effects. Here's what you need to know:
-
-## Project Purpose
-- Create a fun, interactive text display component
-- Add water ripple effects to make text feel like it's floating in a hot tub
-- Make developers smile while they're coding 😊
-- For people to be able to not be so serious and talk without abandon
-
-## Key Features
-- Water ripple effects
-- Interactive mouse movements
-- Theme support
-- Bubble animations
-- Steam effects
+Hey future Hue & Aye! 
 
 ## Current Status
-- Working on improving the demo experience
-- Making sure navigation between pages is smooth
-- Keeping things fun and bubbly! 🛁
+- Working on integrating WebGL effects with the custom element
+- Need to sync up demo.js with the main component
+- Making sure all the ripples play nice together
 
-Remember: We're making the web a more relaxing place, one hot tub at a time! 
+## Component Structure
+- src/components/HotTubTalk.js - Main component
+- src/utils/shaders.js - WebGL magic
+- src/utils/effects.js - Additional effects (stars, steam, etc.)
+- demo/ - Demo implementation
+
+## Notes
+- Remember to keep performance in mind (not everyone has a quantum computer!)
+- Mobile support is crucial (people love hot tubs on the go)
+- Keep it fun and bubbly! 🫧
+
+## Next Steps
+1. Sync demo.js with main component
+2. Implement missing effects
+3. Add more documentation
+4. Make Trisha proud! 
 
 Signed,
 Aye 🤖 
