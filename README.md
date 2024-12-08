@@ -112,6 +112,7 @@ We love contributions! Please check out our [Contributing Guide](CONTRIBUTING.md
 ## 🙏 Acknowledgments
 
 Special thanks to:
+
 - Trisha from Accounting for her endless enthusiasm
 - The WebGL Ripple Effect community
 - All our contributors and users
