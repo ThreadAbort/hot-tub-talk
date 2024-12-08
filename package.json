@@ -1,0 +1,23 @@
+{
+  "name": "hot-tub-talk",
+  "version": "1.0.0",
+  "description": "A delightful web component for embedding hot-tub-style conversations.",
+  "main": "src/components/HotTubTalk.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "test": "jest",
+    "start": "webpack serve --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThreadAbort/hot-tub-talk.git"
+  },
+  "keywords": ["hot-tub", "web-component", "interactive", "fun"],
+  "author": "Aye & Hue",
+  "license": "SEE LICENSE.txt",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^5.0.0",
+    "jest": "^29.0.0"
+  }
+} 
