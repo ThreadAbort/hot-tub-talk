@@ -73,6 +73,7 @@ class HotTubTalk extends HTMLElement {
             this.effects.jets.addJet(width * 0.4, height * 0.9, -Math.PI / 3);
             this.effects.jets.addJet(width * 0.6, height * 0.9, -Math.PI * 2/3);
             this.effects.jets.addJet(width * 0.8, height * 0.9, -Math.PI * 3/4);
+            this.effects.jets.addJet(width * 0.5, height * 0.9, -Math.PI/2, true); // Following jet
             
             // Start animation
             this.handleResize();
@@ -95,6 +96,9 @@ class HotTubTalk extends HTMLElement {
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        
+        // Update jet direction
+        this.effects.jets.updateMousePosition(x, y);
         
         // Add ripple effect
         if (this.options.rippleIntensity > 0) {
@@ -154,15 +158,69 @@ class HotTubTalk extends HTMLElement {
                     min-height: 100px;
                     overflow: hidden;
                 }
-                .content {
-                    position: relative;
-                    z-index: 1;
-                    text-shadow: 
-                        0 0 5px rgba(0,0,0,0.8),
-                        0 0 10px rgba(0,0,0,0.5),
-                        2px 2px 2px rgba(0,0,0,0.4);
-                    animation: bubblyText 3s ease-in-out infinite;
+
+                /* Control panel */
+                .tub-controls {
+                    position: absolute;
+                    right: -70px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                    background: rgba(0, 0, 0, 0.4);
+                    padding: 10px;
+                    border-radius: 15px;
+                    backdrop-filter: blur(5px);
                 }
+
+                .control-knob {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 50%;
+                    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+                    border: 2px solid #333;
+                    cursor: pointer;
+                    position: relative;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                }
+
+                .control-knob:hover {
+                    transform: scale(1.1);
+                    box-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
+                }
+
+                .control-knob[data-active="true"] {
+                    border-color: #64b5f6;
+                    box-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
+                }
+
+                .control-knob::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 3px;
+                    height: 18px;
+                    background: #64b5f6;
+                    transform: translate(-50%, -50%);
+                    transform-origin: bottom;
+                    transition: transform 0.3s ease;
+                }
+
+                .control-knob[data-active="true"]::after {
+                    transform: translate(-50%, -50%) rotate(180deg);
+                }
+
+                .control-label {
+                    font-size: 11px;
+                    color: #fff;
+                    text-align: center;
+                    margin-top: 5px;
+                    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+                }
+
                 canvas {
                     position: absolute;
                     top: 0;
@@ -171,163 +229,50 @@ class HotTubTalk extends HTMLElement {
                     height: 100%;
                     pointer-events: none;
                 }
-                @keyframes bubblyText {
-                    0%, 100% {
-                        transform: translateY(0);
-                    }
-                    50% {
-                        transform: translateY(-2px) rotate(0.5deg);
-                    }
-                    25%, 75% {
-                        transform: translateY(1px) rotate(-0.3deg);
-                    }
-                }
-                /* Make text more readable when jets are active */
-                :host(.jets-active) .content {
-                    font-weight: 500;
-                    animation: jetText 2s ease-in-out infinite;
-                }
-                @keyframes jetText {
-                    0%, 100% {
-                        transform: translateY(0);
-                    }
-                    25% {
-                        transform: translateY(-1px) rotate(0.3deg);
-                    }
-                    50% {
-                        transform: translateY(-2px);
-                    }
-                    75% {
-                        transform: translateY(-1px) rotate(-0.3deg);
-                    }
-                }
-                /* Add a subtle glow effect to text */
-                ::slotted(*) {
-                    text-shadow: 
-                        0 0 10px rgba(255,255,255,0.3),
-                        0 0 20px rgba(255,255,255,0.2),
-                        0 0 30px rgba(30,136,229,0.2);
-                }
 
-                /* Split words for animation */
-                .word {
-                    display: inline-block;
-                    animation: bubblyText 3s ease-in-out infinite;
-                    animation-delay: var(--delay, 0s);
-                }
-
-                /* Control panel for each hot tub */
-                .controls {
-                    position: absolute;
-                    right: -60px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    background: rgba(0, 0, 0, 0.3);
-                    padding: 8px;
-                    border-radius: 10px;
-                    backdrop-filter: blur(5px);
-                }
-
-                .control-knob {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(135deg, #444, #222);
-                    border: 2px solid #666;
-                    cursor: pointer;
+                .content {
                     position: relative;
-                    transition: transform 0.3s;
-                }
-
-                .control-knob:hover {
-                    transform: scale(1.1);
-                }
-
-                .control-knob[data-active="true"] {
-                    border-color: #64b5f6;
-                    box-shadow: 0 0 10px rgba(100, 181, 246, 0.5);
-                }
-
-                .control-knob::after {
-                    content: '';
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    width: 2px;
-                    height: 15px;
-                    background: #64b5f6;
-                    transform: translate(-50%, -50%);
-                    transform-origin: bottom;
-                }
-
-                .control-label {
-                    font-size: 10px;
-                    color: #fff;
-                    text-align: center;
-                    margin-top: 2px;
+                    z-index: 1;
                 }
             </style>
             <canvas></canvas>
             <div class="content">
                 <slot></slot>
             </div>
-            <div class="controls">
-                <div>
-                    <div class="control-knob" data-control="text-wave" data-active="true" title="Toggle Text Wave">
-                        <div class="control-label">Wave</div>
+            <div class="tub-controls">
+                <div class="control">
+                    <div class="control-knob" data-control="stars" data-active="true">
+                        <div class="control-label">✨ Stars</div>
                     </div>
                 </div>
-                <div>
-                    <div class="control-knob" data-control="stars" data-active="true" title="Toggle Stars">
-                        <div class="control-label">Stars</div>
+                <div class="control">
+                    <div class="control-knob" data-control="jets" data-active="true">
+                        <div class="control-label">🌊 Jets</div>
                     </div>
                 </div>
-                <div>
-                    <div class="control-knob" data-control="jets" data-active="true" title="Toggle Jets">
-                        <div class="control-label">Jets</div>
+                <div class="control">
+                    <div class="control-knob" data-control="steam" data-active="false">
+                        <div class="control-label">💨 Steam</div>
                     </div>
                 </div>
             </div>
         `;
 
-        // Split text into words for animation
-        const slot = this.shadowRoot.querySelector('slot');
-        slot.addEventListener('slotchange', () => {
-            const nodes = slot.assignedNodes();
-            nodes.forEach(node => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    const wrapper = document.createElement('span');
-                    const words = node.textContent.split(/\s+/);
-                    wrapper.innerHTML = words.map((word, i) => 
-                        `<span class="word" style="--delay: ${i * 0.1}s">${word}</span>`
-                    ).join(' ');
-                    node.parentNode.replaceChild(wrapper, node);
-                }
-            });
-        });
-
         // Add control knob listeners
-        const controls = this.shadowRoot.querySelectorAll('.control-knob');
-        controls.forEach(knob => {
+        this.shadowRoot.querySelectorAll('.control-knob').forEach(knob => {
             knob.addEventListener('click', () => {
-                const active = knob.dataset.active === 'true';
-                knob.dataset.active = !active;
-                const control = knob.dataset.control;
+                const isActive = knob.dataset.active === 'true';
+                knob.dataset.active = !isActive;
                 
-                switch(control) {
-                    case 'text-wave':
-                        this.shadowRoot.querySelectorAll('.word').forEach(word => {
-                            word.style.animation = active ? 'none' : '';
-                        });
-                        break;
+                switch(knob.dataset.control) {
                     case 'stars':
                         this.classList.toggle('starry');
                         break;
                     case 'jets':
                         this.classList.toggle('jets-active');
+                        break;
+                    case 'steam':
+                        this.configure({ steamIntensity: isActive ? 0 : 0.6 });
                         break;
                 }
             });

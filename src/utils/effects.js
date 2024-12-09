@@ -100,14 +100,33 @@ export class JetSystem {
     constructor() {
         this.jets = [];
         this.particles = [];
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.followJet = null;
     }
 
-    addJet(x, y, angle) {
-        this.jets.push({
+    addJet(x, y, angle, follow = false) {
+        const jet = {
             x, y, angle,
             active: true,
-            particles: []
-        });
+            follow
+        };
+        if (follow) {
+            this.followJet = jet;
+        }
+        this.jets.push(jet);
+    }
+
+    updateMousePosition(x, y) {
+        this.mouseX = x;
+        this.mouseY = y;
+        
+        if (this.followJet) {
+            // Calculate angle from jet to mouse
+            const dx = this.mouseX - this.followJet.x;
+            const dy = this.mouseY - this.followJet.y;
+            this.followJet.angle = Math.atan2(dy, dx);
+        }
     }
 
     update(deltaTime) {
