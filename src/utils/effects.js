@@ -103,7 +103,7 @@ export class JetSystem {
         this.mouseX = 0;
         this.mouseY = 0;
         this.followJet = null;
-        this.intensity = 0.5;  // Default intensity
+        this.intensity = 0.999;  // Default intensity
     }
 
     setIntensity(value) {
@@ -165,12 +165,12 @@ export class JetSystem {
 
     draw(ctx) {
         ctx.save();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.fillStyle = 'rgba(75 , 25, 255, 0.6)';
         
         this.particles.forEach(p => {
             ctx.globalAlpha = p.life * 0.5;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y + 20, p.size * 2, 0, Math.PI * 2);
             ctx.fill();
         });
         
@@ -189,11 +189,12 @@ export class BubbleSystem {
             size: Math.random() * 8 + 4,
             speed: Math.random() * 2 + 1,
             wobble: Math.random() * Math.PI * 2,
-            wobbleSpeed: Math.random() * 2 + 1,
+            wobbleSpeed: Math.random() * 2 + 1 ,
             life: 1
         });
+        console.log(this.intensity);
     }
-
+    
     update(deltaTime) {
         this.bubbles = this.bubbles.filter(bubble => {
             bubble.y -= bubble.speed * deltaTime * 0.05;
