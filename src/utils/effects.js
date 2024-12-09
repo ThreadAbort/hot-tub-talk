@@ -128,7 +128,8 @@ export class JetSystem {
         this.mouseY = 0;
         this.followJet = null;
         this.intensity = 1;  // Default intensity
-        this.wobbleIntensity = .5;
+        this.wobbleIntensity = 0.5;
+        this.wobbleTime = 0;  // Add time tracking for wobble
     }
 
     setIntensity(value) {
@@ -164,6 +165,9 @@ export class JetSystem {
     }
 
     update(deltaTime) {
+        // Update wobble time
+        this.wobbleTime += deltaTime * 0.001;  // Slower time progression
+
         // Update existing particles
         this.particles = this.particles.filter(p => {
             p.x += Math.cos(p.angle) * p.speed;
@@ -175,20 +179,30 @@ export class JetSystem {
         // Add new particles based on intensity
         this.jets.forEach(jet => {
             if (jet.active) {
-                // Number of particles scales with intensity
                 const particleCount = Math.floor(3 * this.intensity) + 1;
                 for (let i = 0; i < particleCount; i++) {
-                    const waveOffset = Math.sin(Date.now() * 0.023) * 0.2 * this.wobbleIntensity;
+                    // More dramatic wobble effect
+                    const waveOffset = (
+                        Math.sin(this.wobbleTime * 2) * 0.4 + // Slow wave
+                        Math.sin(this.wobbleTime * 5) * 0.2   // Fast ripple
+                    ) * this.wobbleIntensity;
+
                     this.particles.push({
-                        x: jet.x,
+                        x: jet.x + Math.sin(this.wobbleTime * 3) * 2 * this.wobbleIntensity, // Add horizontal wobble
                         y: jet.y,
                         speed: (Math.random() * 3 + 4) * this.intensity,
-                        angle: jet.angle + waveOffset + (Math.random() - 0.8) * 0.3 * this.wobbleIntensity,
-                        life: .12 * Math.random(),
-                        size: (Math.random() * 4 + 2) * this.intensity
+                        angle: jet.angle + waveOffset + (Math.random() - 0.8) * 0.5 * this.wobbleIntensity,
+                        life: 0.12 * Math.random(),
+                        size: (Math.random() * 4 + 2) * this.intensity,
+                        wobblePhase: Math.random() * Math.PI * 2 // Random phase for each particle
                     });
                 }
             }
+        });
+
+        // Update particle positions with additional wobble
+        this.particles.forEach(p => {
+            p.x += Math.sin(this.wobbleTime * 4 + p.wobblePhase) * 0.3 * this.wobbleIntensity;
         });
     }
 
@@ -231,8 +245,9 @@ export class BubbleSystem {
     update(deltaTime) {
         this.bubbles = this.bubbles.filter(bubble => {
             bubble.y -= bubble.speed * deltaTime * 0.05;
-            bubble.x += Math.sin(bubble.wobble) * 0.5 * this.wobbleIntensity;
-            bubble.wobble += bubble.wobbleSpeed * deltaTime * 0.01 * this.wobbleIntensity;
+            // More dramatic wobble for bubbles
+            bubble.x += Math.sin(bubble.wobble) * this.wobbleIntensity * 2;  // Doubled the effect
+            bubble.wobble += bubble.wobbleSpeed * deltaTime * 0.02 * this.wobbleIntensity;  // Faster wobble
             bubble.life -= 0.01;
             return bubble.life > 0;
         });
