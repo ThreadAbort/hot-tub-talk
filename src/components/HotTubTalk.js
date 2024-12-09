@@ -148,6 +148,9 @@ class HotTubTalk extends HTMLElement {
 
         // Update control states
         this.updateControlStates();
+
+        // Initialize wobble state
+        this.setAttribute('data-wobble', 'true');
     }
 
     disconnectedCallback() {
@@ -377,6 +380,40 @@ class HotTubTalk extends HTMLElement {
                     position: relative;
                     z-index: 1;
                 }
+
+                /* Text wobble animation */
+                .content {
+                    position: relative;
+                    z-index: 1;
+                }
+
+                /* Only apply wobble when wave effect is active */
+                :host([data-wobble="true"]) .content {
+                    animation: textWobble 3s ease-in-out infinite;
+                }
+
+                @keyframes textWobble {
+                    0%, 100% {
+                        transform: translateY(0) rotate(0deg);
+                    }
+                    25% {
+                        transform: translateY(-4px) rotate(0.3deg);
+                    }
+                    50% {
+                        transform: translateY(-2px) rotate(-0.3deg);
+                    }
+                    75% {
+                        transform: translateY(-3px) rotate(0.2deg);
+                    }
+                }
+
+                /* Disable mouse interaction when wobble is off */
+                :host([data-wobble="false"]) {
+                    pointer-events: none;
+                }
+                :host([data-wobble="false"]) .content {
+                    pointer-events: auto;
+                }
             </style>
             <canvas></canvas>
             <div class="content">
@@ -487,6 +524,28 @@ class HotTubTalk extends HTMLElement {
 
         // Initialize controls with current state
         this.updateControlStates();
+
+        // Update the wobble toggle handler
+        this.shadowRoot.querySelector('[data-control="wobble"]').addEventListener('click', () => {
+            const isActive = this.getAttribute('data-wobble') === 'true';
+            const newState = !isActive;
+            
+            // Toggle wobble state
+            this.setAttribute('data-wobble', newState);
+            
+            // Update effects
+            this.options.wobbleIntensity = newState ? 0.5 : 0;
+            if (this.effects.jets) {
+                this.effects.jets.setWobble(this.options.wobbleIntensity);
+                this.effects.bubbles.setWobble(this.options.wobbleIntensity);
+            }
+
+            // Update interactive state
+            this.options.interactive = newState;
+            
+            // Update control state
+            this.shadowRoot.querySelector('[data-control="wobble"]').dataset.active = newState.toString();
+        });
     }
 }
 
