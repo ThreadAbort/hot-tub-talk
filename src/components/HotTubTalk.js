@@ -1,6 +1,7 @@
 // HotTubTalk.js - A delightful web component for hot-tub style conversations
 // Created by Hue & Aye - Making the web a more relaxing place! 🛁
 
+import { step } from 'three/webgpu';
 import { StarField, SteamEffect, JetSystem, BubbleSystem } from '../utils/effects.js';
 
 class HotTubTalk extends HTMLElement {
@@ -17,9 +18,13 @@ class HotTubTalk extends HTMLElement {
             perturbance: 0.2,
             interactive: true,
             crossOrigin: '',
-            useHardwareAcceleration: true,
-            steamIntensity: 0,
+            stars: true,
+            steam: true,
+            steamIntensity: .2,
+            jets: true,
             jetsEnabled: true,
+            jetsIntensity: 0.5,
+            ripple: true,
             rippleIntensity: 0.5
         };
 
@@ -158,28 +163,38 @@ class HotTubTalk extends HTMLElement {
                     color: var(--hot-tub-talk-text-color, white);
                     min-height: 100px;
                 }
-
                 /* Control panel */
                 .tub-controls {
                     position: absolute;
-                    right: -70px;
+                    z-index: 2;
+                    left: -22px;
                     top: 0;
                     bottom: 0;
-                    width: 60px;
+                    width: 32px; /* Fixed width to contain controls */
+                    
                     background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-                    border-radius: 0 12px 12px 0;
-                    padding: 10px;
+                    border-radius: 12px 0px 0px 12px;
+                    padding: 8px 4px;
                     display: flex;
                     flex-direction: column;
-                    justify-content: space-around;
+                    justify-content: space-evenly;
+                    align-items: center;
+                    gap: 8px;
                     box-shadow: 
                         2px 0 10px rgba(0,0,0,0.3),
                         inset 1px 0 1px rgba(255,255,255,0.1);
                 }
 
+                .control {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+
                 .control-knob {
-                    width: 44px;
-                    height: 44px;
+                    width: 24px;
+                    height: 24px;
                     border-radius: 50%;
                     background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
                     border: 2px solid #333;
@@ -198,29 +213,28 @@ class HotTubTalk extends HTMLElement {
                 .control-knob.air-control {
                     background: linear-gradient(145deg, #1e88e5, #1565c0);
                 }
-
                 .air-level {
-                    width: 4px;
-                    height: 40px;
+                    height: 4px;
+                    width: 32px;
                     background: #333;
                     border-radius: 2px;
-                    margin: 5px auto;
+                    margin: 4px auto;
                     overflow: hidden;
                 }
 
                 .air-level-fill {
-                    width: 100%;
+                    height: 100%;
                     background: #64b5f6;
-                    height: var(--air-level, 50%);
-                    transition: height 0.3s ease;
+                    width: var(--air-level, 50%);
+                    transition: width 0.3s ease;
                     box-shadow: 0 0 5px rgba(100, 181, 246, 0.5);
                 }
 
                 .control-label {
-                    font-size: 11px;
+                    font-size: 10px;
                     color: #fff;
                     text-align: center;
-                    margin-top: 5px;
+                    margin-top: 2px;
                     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
                 }
 
