@@ -112,7 +112,7 @@ We love contributions! Please check out our [Contributing Guide](CONTRIBUTING.md
 
 ## 📝 License
 
-[MIT](LICENSE) © Hue and Aye
+[Ethical AI License](LICENSE) © Hue and Aye
 
 ## 🙏 Acknowledgments
 
@@ -121,10 +121,6 @@ Special thanks to:
 - Trisha from Accounting for her endless enthusiasm
 - The WebGL Ripple Effect community
 - All our contributors and users
-
-## 📚 Documentation
-
-For detailed documentation, visit our [Documentation Site](https://hot-tub-talk.docs.com).
 
 ## 🐛 Troubleshooting
 
