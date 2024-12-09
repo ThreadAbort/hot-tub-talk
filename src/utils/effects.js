@@ -2,10 +2,31 @@
 // Making our hot tub extra fancy! ✨
 
 export class StarField {
-    constructor(canvas) {
-        this.canvas = canvas;
+    constructor(container = document.body) {
+        // Create a background canvas for stars
+        this.canvas = document.createElement('canvas');
+        this.canvas.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        `;
+        container.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext('2d');
         this.stars = [];
         this.initStars();
+        this.handleResize();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => this.handleResize());
+    }
+
+    handleResize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
     }
 
     initStars() {
@@ -21,7 +42,6 @@ export class StarField {
     }
 
     update(time) {
-        const ctx = this.canvas.getContext('2d');
         ctx.save();
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         
@@ -95,39 +115,56 @@ export class SteamEffect {
 export class JetSystem {
     constructor() {
         this.jets = [];
+        this.particles = [];
     }
 
     addJet(x, y, angle) {
         this.jets.push({
             x, y, angle,
-            active: false,
+            active: true,
             particles: []
         });
     }
 
     update(deltaTime) {
+        // Update existing particles
+        this.particles = this.particles.filter(p => {
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+            p.life -= 0.02;
+            return p.life > 0;
+        });
+
+        // Add new particles from active jets
         this.jets.forEach(jet => {
             if (jet.active) {
-                // Add new particles
-                if (Math.random() < 0.3) {
-                    jet.particles.push({
+                // Add multiple particles per frame for more volume
+                for (let i = 0; i < 3; i++) {
+                    this.particles.push({
                         x: jet.x,
                         y: jet.y,
                         speed: Math.random() * 2 + 3,
-                        angle: jet.angle + (Math.random() - 0.5) * 0.5,
-                        life: 1
+                        angle: jet.angle + (Math.random() - 0.5) * 0.3,
+                        life: 1,
+                        size: Math.random() * 3 + 2
                     });
                 }
             }
-
-            // Update particles
-            jet.particles = jet.particles.filter(p => {
-                p.x += Math.cos(p.angle) * p.speed;
-                p.y += Math.sin(p.angle) * p.speed;
-                p.life -= 0.02;
-                return p.life > 0;
-            });
         });
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        
+        this.particles.forEach(p => {
+            ctx.globalAlpha = p.life * 0.5;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        
+        ctx.restore();
     }
 }
 

@@ -3,7 +3,14 @@
 
 import { StarField, SteamEffect, JetSystem, BubbleSystem } from '../utils/effects.js';
 
+// Add at the top of the file
+let globalStarField = null;
+
 class HotTubTalk extends HTMLElement {
+    static {
+        // Create a single StarField instance for all components
+        globalStarField = new StarField();
+    }
     constructor() {
         super();
         
@@ -65,10 +72,12 @@ class HotTubTalk extends HTMLElement {
             this.ctx = this.canvas.getContext('2d');
             this.effects.stars = new StarField(this.canvas);
             
-            // Add default jets
-            const { width, height } = this.canvas.getBoundingClientRect();
-            this.effects.jets.addJet(width * 0.2, height * 0.8, Math.PI / 4);
-            this.effects.jets.addJet(width * 0.8, height * 0.8, Math.PI * 3 / 4);
+            // Add multiple jets for better effect
+            const { width, height } = this.getBoundingClientRect();
+            this.effects.jets.addJet(width * 0.2, height * 0.9, -Math.PI / 4);
+            this.effects.jets.addJet(width * 0.4, height * 0.9, -Math.PI / 3);
+            this.effects.jets.addJet(width * 0.6, height * 0.9, -Math.PI * 2/3);
+            this.effects.jets.addJet(width * 0.8, height * 0.9, -Math.PI * 3/4);
             
             // Start animation
             this.handleResize();
@@ -125,8 +134,10 @@ class HotTubTalk extends HTMLElement {
             this.effects.steam.draw(this.ctx);
         }
 
-        if (this.options.jetsEnabled) {
+        // Update jets
+        if (this.options.jetsEnabled || this.classList.contains('jets-active')) {
             this.effects.jets.update(deltaTime);
+            this.effects.jets.draw(this.ctx);
         }
 
         this.effects.bubbles.update(deltaTime);
