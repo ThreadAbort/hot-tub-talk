@@ -42,24 +42,24 @@ export class StarField {
     }
 
     update(time) {
-        ctx.save();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.save();
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         
         this.stars.forEach(star => {
             const opacity = (Math.sin(time * 0.001 * star.twinkleSpeed) + 1) / 2;
-            ctx.globalAlpha = opacity;
-            ctx.beginPath();
-            ctx.arc(
+            this.ctx.globalAlpha = opacity;
+            this.ctx.beginPath();
+            this.ctx.arc(
                 star.x * this.canvas.width,
                 star.y * this.canvas.height,
                 star.size,
                 0,
                 Math.PI * 2
             );
-            ctx.fill();
+            this.ctx.fill();
         });
         
-        ctx.restore();
+        this.ctx.restore();
     }
 }
 
@@ -140,13 +140,15 @@ export class JetSystem {
             if (jet.active) {
                 // Add multiple particles per frame for more volume
                 for (let i = 0; i < 3; i++) {
+                    // Add some wave motion to the jets
+                    const waveOffset = Math.sin(Date.now() * 0.003) * 0.2;
                     this.particles.push({
                         x: jet.x,
                         y: jet.y,
-                        speed: Math.random() * 2 + 3,
-                        angle: jet.angle + (Math.random() - 0.5) * 0.3,
+                        speed: Math.random() * 3 + 4, // Faster particles
+                        angle: jet.angle + waveOffset + (Math.random() - 0.5) * 0.3,
                         life: 1,
-                        size: Math.random() * 3 + 2
+                        size: Math.random() * 4 + 2  // Slightly bigger particles
                     });
                 }
             }
@@ -155,10 +157,10 @@ export class JetSystem {
 
     draw(ctx) {
         ctx.save();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; // More visible particles
         
         this.particles.forEach(p => {
-            ctx.globalAlpha = p.life * 0.5;
+            ctx.globalAlpha = p.life * 0.7; // More visible
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fill();
