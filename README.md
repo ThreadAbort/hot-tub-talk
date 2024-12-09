@@ -12,6 +12,8 @@ A delightful web component for embedding hot-tub-style conversations in your HTM
 - ⚡ Optimized performance with hardware acceleration
 - 🎨 Customizable appearance and behavior
 
+![alt text](demo/image.png)
+
 ## 📦 Installation
 
 ```bash
