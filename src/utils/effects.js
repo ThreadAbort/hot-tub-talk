@@ -2,31 +2,10 @@
 // Making our hot tub extra fancy! ✨
 
 export class StarField {
-    constructor(container = document.body) {
-        // Create a background canvas for stars
-        this.canvas = document.createElement('canvas');
-        this.canvas.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        `;
-        container.appendChild(this.canvas);
-        this.ctx = this.canvas.getContext('2d');
+    constructor(canvas) {
+        this.canvas = canvas;
         this.stars = [];
         this.initStars();
-        this.handleResize();
-        
-        // Handle window resize
-        window.addEventListener('resize', () => this.handleResize());
-    }
-
-    handleResize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
     }
 
     initStars() {
@@ -157,10 +136,10 @@ export class JetSystem {
 
     draw(ctx) {
         ctx.save();
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; // More visible particles
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
         
         this.particles.forEach(p => {
-            ctx.globalAlpha = p.life * 0.7; // More visible
+            ctx.globalAlpha = p.life * 0.5;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fill();
