@@ -226,10 +226,53 @@ class HotTubTalk extends HTMLElement {
                     background: var(--hot-tub-talk-background, rgba(30, 136, 229, 0.15));
                     border-radius: var(--hot-tub-talk-border-radius, 12px);
                     padding: 20px;
-                    margin-right: 70px; /* Space for controls */
+                    margin-right: 70px;
                     color: var(--hot-tub-talk-text-color, white);
                     min-height: 100px;
+                    user-select: none;  /* Prevent text selection */
                 }
+
+                /* Keep text in content selectable if needed */
+                .content {
+                    position: relative;
+                    z-index: 1;
+                    user-select: text;  /* Allow text selection in content */
+                }
+
+                /* Fix pointer events */
+                :host([data-wobble="false"]) canvas {
+                    pointer-events: none;
+                }
+
+                /* Keep controls clickable always */
+                .tub-controls {
+                    pointer-events: auto !important;
+                }
+
+                .control-knob {
+                    pointer-events: auto !important;
+                }
+
+                /* Text wobble animation */
+                :host([data-wobble="true"]) .content {
+                    animation: textWobble 3s ease-in-out infinite;
+                }
+
+                @keyframes textWobble {
+                    0%, 100% {
+                        transform: translateY(0) rotate(0deg);
+                    }
+                    25% {
+                        transform: translateY(-4px) rotate(0.3deg);
+                    }
+                    50% {
+                        transform: translateY(-2px) rotate(-0.3deg);
+                    }
+                    75% {
+                        transform: translateY(-3px) rotate(0.2deg);
+                    }
+                }
+
                 /* Control panel */
                 .tub-controls {
                     position: absolute;
@@ -540,9 +583,6 @@ class HotTubTalk extends HTMLElement {
                 this.effects.bubbles.setWobble(this.options.wobbleIntensity);
             }
 
-            // Update interactive state
-            this.options.interactive = newState;
-            
             // Update control state
             this.shadowRoot.querySelector('[data-control="wobble"]').dataset.active = newState.toString();
         });
