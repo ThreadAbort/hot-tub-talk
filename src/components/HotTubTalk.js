@@ -20,12 +20,13 @@ class HotTubTalk extends HTMLElement {
             crossOrigin: '',
             stars: true,
             steam: true,
-            steamIntensity: .2,
+            steamIntensity: 0.2,
             jets: true,
             jetsEnabled: true,
             jetsIntensity: 0.5,
             ripple: true,
-            rippleIntensity: 0.5
+            rippleIntensity: 0.5,
+            wobbleIntensity: 0.5
         };
 
         // Initialize effects
@@ -258,23 +259,23 @@ class HotTubTalk extends HTMLElement {
             </div>
             <div class="tub-controls">
                 <div class="control">
-                    <div class="control-knob" data-control="stars" data-active="true">
-                        <div class="control-label">✨</div>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="control-knob" data-control="jets" data-active="true">
+                    <div class="control-knob" data-control="wobble" data-active="true">
                         <div class="control-label">🌊</div>
                     </div>
                 </div>
                 <div class="control">
-                    <div class="control-knob" data-control="steam" data-active="false">
+                    <div class="control-knob" data-control="steam" data-active="true">
+                        <div class="control-label">♨️</div>
+                    </div>
+                </div>
+                <div class="control">
+                    <div class="control-knob" data-control="jets" data-active="true">
                         <div class="control-label">💨</div>
                     </div>
                 </div>
                 <div class="control">
                     <div class="control-knob air-control" data-control="air" data-active="true">
-                        <div class="control-label">💨</div>
+                        <div class="control-label">💫</div>
                     </div>
                     <div class="air-level">
                         <div class="air-level-fill"></div>
@@ -283,51 +284,62 @@ class HotTubTalk extends HTMLElement {
             </div>
         `;
 
-        // Add control knob listeners
+        // Add control knob listeners with proper functionality
         this.shadowRoot.querySelectorAll('.control-knob').forEach(knob => {
             knob.addEventListener('click', () => {
                 const isActive = knob.dataset.active === 'true';
                 knob.dataset.active = (!isActive).toString();
                 
                 switch(knob.dataset.control) {
-                    case 'stars':
-                        this.classList.toggle('starry');
-                        break;
-                    case 'jets':
-                        this.classList.toggle('jets-active');
-                        this.effects.jets.jets.forEach(jet => {
-                            jet.active = !isActive;
-                        });
+                    case 'wobble':
+                        const wobbleValue = isActive ? 0 : 0.5;
+                        this.options.wobbleIntensity = wobbleValue;
+                        this.effects.jets.setWobble(wobbleValue);
+                        this.effects.bubbles.setWobble(wobbleValue);
                         break;
                     case 'steam':
                         this.effects.steam.intensity = isActive ? 0 : 0.6;
+                        break;
+                    case 'jets':
+                        this.effects.jets.jets.forEach(jet => {
+                            jet.active = !isActive;
+                        });
                         break;
                 }
             });
         });
 
-        // Air control with vertical drag
+        // Enhanced air control with horizontal drag
         const airKnob = this.shadowRoot.querySelector('.air-control');
         const airLevel = this.shadowRoot.querySelector('.air-level-fill');
         let isDragging = false;
-        let startY = 0;
+        let startX = 0;
         let startIntensity = this.options.rippleIntensity;
 
         airKnob.addEventListener('mousedown', (e) => {
             isDragging = true;
-            startY = e.clientY;
+            startX = e.clientX;
             startIntensity = this.options.rippleIntensity;
-            document.body.style.cursor = 'ns-resize';
+            document.body.style.cursor = 'ew-resize';  // Changed to horizontal cursor
             e.preventDefault();
         });
 
         window.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            const delta = (startY - e.clientY) / 200;
+            const delta = (e.clientX - startX) / 200;  // Changed to use X coordinate
             const newIntensity = Math.max(0, Math.min(1, startIntensity + delta));
+            
+            // Update all intensity-based effects
             this.options.rippleIntensity = newIntensity;
+            this.options.steamIntensity = newIntensity * 0.6;
+            this.options.jetsIntensity = newIntensity;
+            
+            // Update effects
             this.effects.jets.setIntensity(newIntensity);
-            airLevel.style.height = `${newIntensity * 100}%`;
+            this.effects.steam.intensity = newIntensity * 0.6;
+            
+            // Update visual indicator
+            airLevel.style.width = `${newIntensity * 100}%`;
         });
 
         window.addEventListener('mouseup', () => {
@@ -336,7 +348,7 @@ class HotTubTalk extends HTMLElement {
         });
 
         // Initialize air level
-        airLevel.style.height = `${this.options.rippleIntensity * 100}%`;
+        airLevel.style.width = `${this.options.rippleIntensity * 100}%`;
     }
 }
 

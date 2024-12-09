@@ -104,10 +104,15 @@ export class JetSystem {
         this.mouseY = 0;
         this.followJet = null;
         this.intensity = 1;  // Default intensity
+        this.wobbleIntensity = 0.5;
     }
 
     setIntensity(value) {
         this.intensity = value;
+    }
+
+    setWobble(value) {
+        this.wobbleIntensity = value;
     }
 
     addJet(x, y, angle, follow = false) {
@@ -149,12 +154,12 @@ export class JetSystem {
                 // Number of particles scales with intensity
                 const particleCount = Math.floor(3 * this.intensity) + 1;
                 for (let i = 0; i < particleCount; i++) {
-                    const waveOffset = Math.sin(Date.now() * 0.003) * 0.2;
+                    const waveOffset = Math.sin(Date.now() * 0.003) * 0.2 * this.wobbleIntensity;
                     this.particles.push({
                         x: jet.x,
                         y: jet.y,
                         speed: (Math.random() * 3 + 4) * this.intensity,
-                        angle: jet.angle + waveOffset + (Math.random() - 0.5) * 0.3,
+                        angle: jet.angle + waveOffset + (Math.random() - 0.5) * 0.3 * this.wobbleIntensity,
                         life: 1,
                         size: (Math.random() * 4 + 2) * this.intensity
                     });
@@ -181,6 +186,11 @@ export class JetSystem {
 export class BubbleSystem {
     constructor() {
         this.bubbles = [];
+        this.wobbleIntensity = 0.5;
+    }
+
+    setWobble(value) {
+        this.wobbleIntensity = value;
     }
 
     spawn(x, y) {
@@ -197,8 +207,8 @@ export class BubbleSystem {
     update(deltaTime) {
         this.bubbles = this.bubbles.filter(bubble => {
             bubble.y -= bubble.speed * deltaTime * 0.05;
-            bubble.x += Math.sin(bubble.wobble) * 0.5;
-            bubble.wobble += bubble.wobbleSpeed * deltaTime * 0.01;
+            bubble.x += Math.sin(bubble.wobble) * 0.5 * this.wobbleIntensity;
+            bubble.wobble += bubble.wobbleSpeed * deltaTime * 0.01 * this.wobbleIntensity;
             bubble.life -= 0.01;
             return bubble.life > 0;
         });
