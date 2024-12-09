@@ -103,6 +103,11 @@ export class JetSystem {
         this.mouseX = 0;
         this.mouseY = 0;
         this.followJet = null;
+        this.intensity = 0.5;  // Default intensity
+    }
+
+    setIntensity(value) {
+        this.intensity = value;
     }
 
     addJet(x, y, angle, follow = false) {
@@ -138,20 +143,20 @@ export class JetSystem {
             return p.life > 0;
         });
 
-        // Add new particles from active jets
+        // Add new particles based on intensity
         this.jets.forEach(jet => {
             if (jet.active) {
-                // Add multiple particles per frame for more volume
-                for (let i = 0; i < 3; i++) {
-                    // Add some wave motion to the jets
+                // Number of particles scales with intensity
+                const particleCount = Math.floor(3 * this.intensity) + 1;
+                for (let i = 0; i < particleCount; i++) {
                     const waveOffset = Math.sin(Date.now() * 0.003) * 0.2;
                     this.particles.push({
                         x: jet.x,
                         y: jet.y,
-                        speed: Math.random() * 3 + 4, // Faster particles
+                        speed: (Math.random() * 3 + 4) * this.intensity,
                         angle: jet.angle + waveOffset + (Math.random() - 0.5) * 0.3,
                         life: 1,
-                        size: Math.random() * 4 + 2  // Slightly bigger particles
+                        size: (Math.random() * 4 + 2) * this.intensity
                     });
                 }
             }

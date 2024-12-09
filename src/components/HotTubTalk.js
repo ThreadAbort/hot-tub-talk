@@ -154,27 +154,27 @@ class HotTubTalk extends HTMLElement {
                     background: var(--hot-tub-talk-background, rgba(30, 136, 229, 0.15));
                     border-radius: var(--hot-tub-talk-border-radius, 12px);
                     padding: 20px;
-                    padding-right: 80px; /* Make room for controls */
+                    margin-right: 70px; /* Space for controls */
                     color: var(--hot-tub-talk-text-color, white);
                     min-height: 100px;
-                    overflow: visible; /* Allow controls to be visible outside */
                 }
 
                 /* Control panel */
                 .tub-controls {
                     position: absolute;
-                    right: 10px;  /* Move controls inside */
-                    top: 50%;
-                    transform: translateY(-50%);
+                    right: -70px;  /* Attach to the right side */
+                    top: 0;
+                    bottom: 0;
+                    width: 60px;
+                    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+                    border-radius: 0 12px 12px 0;
+                    padding: 10px;
                     display: flex;
                     flex-direction: column;
-                    gap: 15px;
-                    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-                    padding: 12px;
-                    border-radius: 15px;
+                    justify-content: space-around;
                     box-shadow: 
-                        0 2px 10px rgba(0,0,0,0.3),
-                        inset 0 1px 1px rgba(255,255,255,0.1);
+                        2px 0 10px rgba(0,0,0,0.3),
+                        inset 1px 0 1px rgba(255,255,255,0.1);
                 }
 
                 .control {
@@ -300,7 +300,7 @@ class HotTubTalk extends HTMLElement {
             </div>
         `;
 
-        // Add control knob listeners
+        // Add control knob listeners with proper functionality
         this.shadowRoot.querySelectorAll('.control-knob').forEach(knob => {
             knob.addEventListener('click', () => {
                 const isActive = knob.dataset.active === 'true';
@@ -312,20 +312,28 @@ class HotTubTalk extends HTMLElement {
                         break;
                     case 'jets':
                         this.classList.toggle('jets-active');
+                        this.configure({ 
+                            jetsEnabled: !isActive 
+                        });
                         break;
                     case 'steam':
-                        this.configure({ steamIntensity: isActive ? 0 : 0.6 });
+                        this.configure({ 
+                            steamIntensity: isActive ? 0 : 0.6 
+                        });
+                        break;
+                    case 'air':
+                        // Air control is handled by drag events
                         break;
                 }
             });
         });
 
-        // Add air control functionality
+        // Enhanced air control
         const airKnob = this.shadowRoot.querySelector('[data-control="air"]');
         const airLevel = this.shadowRoot.querySelector('.air-level-fill');
         let isDragging = false;
         let startY = 0;
-        let startIntensity = 0.5;
+        let startIntensity = this.options.rippleIntensity;
 
         airKnob.addEventListener('mousedown', (e) => {
             isDragging = true;
@@ -340,6 +348,11 @@ class HotTubTalk extends HTMLElement {
             const newIntensity = Math.max(0, Math.min(1, startIntensity + delta));
             this.configure({ rippleIntensity: newIntensity });
             airLevel.style.setProperty('--air-level', `${newIntensity * 100}%`);
+            
+            // Update bubble and jet intensity
+            if (this.effects.jets) {
+                this.effects.jets.setIntensity(newIntensity);
+            }
         });
 
         window.addEventListener('mouseup', () => {
