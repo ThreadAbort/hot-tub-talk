@@ -4,21 +4,26 @@
 import { StarField, SteamEffect, JetSystem, BubbleSystem } from '../utils/effects.js';
 
 class HotTubTalk extends HTMLElement {
+    // Define observed attributes
+    static get observedAttributes() {
+        return ['stars', 'steam', 'jets', 'wobble', 'intensity'];
+    }
+
     constructor() {
         super();
         
         // Create shadow DOM
         this.attachShadow({ mode: 'open' });
         
-        // Initialize properties
+        // Initialize properties with defaults
         this.options = {
             resolution: 512,
             dropRadius: 15,
             perturbance: 0.2,
             interactive: true,
             crossOrigin: '',
-            stars: true,
-            steam: true,
+            stars: false,
+            steam: false,
             steamIntensity: 0.2,
             jets: true,
             jetsEnabled: true,
@@ -26,12 +31,11 @@ class HotTubTalk extends HTMLElement {
             ripple: true,
             rippleIntensity: 0.5,
             wobbleIntensity: 0.5,
-            starAnimationFrequency: 2,
         };
 
         // Initialize effects
         this.effects = {
-            stars: new StarField(),
+            stars: null,
             steam: new SteamEffect(),
             jets: new JetSystem(),
             bubbles: new BubbleSystem()
@@ -47,20 +51,70 @@ class HotTubTalk extends HTMLElement {
         this.render();
     }
 
-    // Public API
-    configure(options = {}) {
-        console.log('Configuring with options:', options);
-        this.options = { ...this.options, ...options };
+    // Handle attribute changes
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue === newValue) return;
+
+        const isEnabled = newValue !== null && newValue !== 'false';
         
-        // Update effects based on new options
-        if ('steamIntensity' in options) {
-            this.effects.steam.intensity = options.steamIntensity;
+        switch(name) {
+            case 'stars':
+                this.options.stars = isEnabled;
+                if (isEnabled) this.classList.add('starry');
+                break;
+            case 'steam':
+                this.options.steam = isEnabled;
+                this.effects.steam.intensity = isEnabled ? 0.6 : 0;
+                break;
+            case 'jets':
+                this.options.jets = isEnabled;
+                this.options.jetsEnabled = isEnabled;
+                if (this.effects.jets) {
+                    this.effects.jets.jets.forEach(jet => {
+                        jet.active = isEnabled;
+                    });
+                }
+                break;
+            case 'wobble':
+                this.options.wobbleIntensity = isEnabled ? 0.5 : 0;
+                if (this.effects.jets) {
+                    this.effects.jets.setWobble(this.options.wobbleIntensity);
+                }
+                break;
+            case 'intensity':
+                const intensity = parseFloat(newValue) || 0.5;
+                this.options.rippleIntensity = intensity;
+                this.options.jetsIntensity = intensity;
+                this.options.steamIntensity = intensity * 0.6;
+                break;
         }
-        
-        if ('jetsEnabled' in options) {
-            this.effects.jets.jets.forEach(jet => {
-                jet.active = options.jetsEnabled;
-            });
+
+        // Update controls if they exist
+        this.updateControlStates();
+    }
+
+    // Add method to update control states
+    updateControlStates() {
+        if (!this.shadowRoot) return;
+
+        const controls = {
+            wobble: this.options.wobbleIntensity > 0,
+            steam: this.options.steam && this.effects.steam.intensity > 0,
+            jets: this.options.jetsEnabled,
+            air: true // Air is always available
+        };
+
+        Object.entries(controls).forEach(([control, isActive]) => {
+            const knob = this.shadowRoot.querySelector(`[data-control="${control}"]`);
+            if (knob) {
+                knob.dataset.active = isActive.toString();
+            }
+        });
+
+        // Update air level indicator
+        const airLevel = this.shadowRoot.querySelector('.air-level-fill');
+        if (airLevel) {
+            airLevel.style.width = `${this.options.rippleIntensity * 100}%`;
         }
     }
 
@@ -69,17 +123,19 @@ class HotTubTalk extends HTMLElement {
         this.canvas = this.shadowRoot.querySelector('canvas');
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
-            
-            // Create StarField with the canvas
             this.effects.stars = new StarField(this.canvas);
             
-            // Add multiple jets for better effect
+            // Initialize jets
             const { width, height } = this.getBoundingClientRect();
             this.effects.jets.addJet(width * 0.2, height * 0.9, -Math.PI / 4);
             this.effects.jets.addJet(width * 0.4, height * 0.9, -Math.PI / 3);
             this.effects.jets.addJet(width * 0.6, height * 0.9, -Math.PI * 2/3);
             this.effects.jets.addJet(width * 0.8, height * 0.9, -Math.PI * 3/4);
-            this.effects.jets.addJet(width * 0.5, height * 0.9, -Math.PI/2, true); // Following jet
+            
+            // Set initial jet states
+            this.effects.jets.jets.forEach(jet => {
+                jet.active = this.options.jetsEnabled;
+            });
             
             // Start animation
             this.handleResize();
@@ -89,6 +145,9 @@ class HotTubTalk extends HTMLElement {
         // Add event listeners
         this.addEventListener('mousemove', this.handleMouseMove);
         window.addEventListener('resize', this.handleResize);
+
+        // Update control states
+        this.updateControlStates();
     }
 
     disconnectedCallback() {
@@ -175,8 +234,7 @@ class HotTubTalk extends HTMLElement {
                     left: -22px;
                     top: 0;
                     bottom: 0;
-                    width: 32px; /* Fixed width to contain controls */
-                    
+                    width: 32px;
                     background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
                     border-radius: 12px 0px 0px 12px;
                     padding: 8px 4px;
@@ -206,18 +264,81 @@ class HotTubTalk extends HTMLElement {
                     cursor: pointer;
                     position: relative;
                     transition: all 0.3s ease;
+                }
+
+                .control-knob::before {
+                    content: attr(data-tooltip);
+                    position: absolute;
+                    left: -22px;  /* Align with control panel edge */
+                    top: -50px;   /* 50px above */
+                    transform: translateX(-100%);  /* Move fully to the left */
+                    background: rgba(0, 0, 0, 0.8);
+                    color: white;
+                    padding: 3px 6px;
+                    border-radius: 3px;
+                    font-size: 10px;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.2s ease;
+                    pointer-events: none;
+                    white-space: nowrap;
+                    /* Remove any rotation */
                     transform-origin: center;
+                    transform: translateX(-100%) rotate(0deg) !important;
+                }
+
+                .control-knob:hover::before {
+                    opacity: 1;
+                    visibility: visible;
                 }
 
                 .control-knob[data-active="true"] {
                     border-color: #64b5f6;
                     box-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
-                    transform: rotate(180deg);
+                }
+
+                /* Add indicator for active state instead of rotation */
+                .control-knob::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 6px;
+                    height: 6px;
+                    background: #64b5f6;
+                    border-radius: 50%;
+                    transform: translate(-50%, -50%);
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+
+                .control-knob[data-active="true"]::after {
+                    opacity: 1;
                 }
 
                 .control-knob.air-control {
-                    background: linear-gradient(145deg, #1e88e5, #1565c0);
+                    transition: all 0.2s ease;
+                    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+                    transform: rotate(calc(var(--intensity, 0.5) * 270deg));  /* 270 degree rotation range */
                 }
+
+                /* Remove the air level indicator and enhance the knob glow */
+                .control-knob.air-control {
+                    box-shadow: 0 0 calc(var(--intensity, 0.5) * 20px) 
+                               rgba(100, 181, 246, calc(var(--intensity, 0.5) * 0.8));
+                }
+
+                /* Smooth dragging experience */
+                .control-knob.air-control:active {
+                    cursor: grab;
+                    transition: transform 0.1s ease;
+                }
+
+                /* Keep tooltips upright even when knob rotates */
+                .control-knob.air-control::before {
+                    transform: translateX(-100%) rotate(calc(var(--intensity, 0.5) * -270deg)) !important;
+                }
+
                 .air-level {
                     height: 4px;
                     width: 32px;
@@ -263,87 +384,66 @@ class HotTubTalk extends HTMLElement {
             </div>
             <div class="tub-controls">
                 <div class="control">
-                    <div class="control-knob" data-control="wobble" data-active="true">
+                    <div class="control-knob" data-control="wobble" data-active="true" data-tooltip="Toggle Wave Effect">
                         <div class="control-label">🌊</div>
                     </div>
                 </div>
                 <div class="control">
-                    <div class="control-knob" data-control="steam" data-active="true">
+                    <div class="control-knob" data-control="steam" data-active="false" data-tooltip="Toggle Steam">
                         <div class="control-label">♨️</div>
                     </div>
                 </div>
                 <div class="control">
-                    <div class="control-knob" data-control="jets" data-active="true">
+                    <div class="control-knob" data-control="jets" data-active="true" data-tooltip="Toggle Jets">
                         <div class="control-label">💨</div>
                     </div>
                 </div>
                 <div class="control">
-                    <div class="control-knob air-control" data-control="air" data-active="true">
-                        <div class="control-label">💫</div>
-                    </div>
-                    <div class="air-level">
-                        <div class="air-level-fill"></div>
+                    <div class="control-knob air-control" data-control="air" data-active="true" data-tooltip="Adjust Intensity">
+                        <div class="control-label">🎚️</div>
                     </div>
                 </div>
             </div>
         `;
 
-        // Add control knob listeners with proper functionality
-        this.shadowRoot.querySelectorAll('.control-knob').forEach(knob => {
-            knob.addEventListener('click', () => {
-                const isActive = knob.dataset.active === 'true';
-                knob.dataset.active = (!isActive).toString();
-                
-                switch(knob.dataset.control) {
-                    case 'wobble':
-                        const wobbleValue = isActive ? 0 : 0.5;
-                        this.options.wobbleIntensity = wobbleValue;
-                        this.effects.jets.setWobble(wobbleValue);
-                        this.effects.bubbles.setWobble(wobbleValue);
-                        break;
-                    case 'steam':
-                        this.effects.steam.intensity = isActive ? 0 : 0.6;
-                        break;
-                    case 'jets':
-                        this.effects.jets.jets.forEach(jet => {
-                            jet.active = !isActive;
-                        });
-                        break;
-                }
-            });
-        });
-
-        // Enhanced air control with horizontal drag
+        // Enhanced air control with smooth rotation
         const airKnob = this.shadowRoot.querySelector('.air-control');
-        const airLevel = this.shadowRoot.querySelector('.air-level-fill');
         let isDragging = false;
-        let startX = 0;
+        let startY = 0;
         let startIntensity = this.options.rippleIntensity;
+        let lastIntensity = startIntensity;
+
+        const updateAirIntensity = (intensity) => {
+            const newIntensity = Math.max(0, Math.min(1, intensity));
+            airKnob.style.setProperty('--intensity', newIntensity);
+            
+            // Update effects
+            this.options.rippleIntensity = newIntensity;
+            this.options.steamIntensity = newIntensity * 0.6;
+            this.options.jetsIntensity = newIntensity;
+            
+            if (this.effects.jets) {
+                this.effects.jets.setIntensity(newIntensity);
+            }
+            if (this.effects.steam) {
+                this.effects.steam.intensity = newIntensity * 0.6;
+            }
+            
+            lastIntensity = newIntensity;
+        };
 
         airKnob.addEventListener('mousedown', (e) => {
             isDragging = true;
-            startX = e.clientX;
-            startIntensity = this.options.rippleIntensity;
-            document.body.style.cursor = 'ew-resize';  // Changed to horizontal cursor
+            startY = e.clientY;
+            startIntensity = lastIntensity;
+            document.body.style.cursor = 'grab';
             e.preventDefault();
         });
 
         window.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            const delta = (e.clientX - startX) / 200;  // Changed to use X coordinate
-            const newIntensity = Math.max(0, Math.min(1, startIntensity + delta));
-            
-            // Update all intensity-based effects
-            this.options.rippleIntensity = newIntensity;
-            this.options.steamIntensity = newIntensity * 0.6;
-            this.options.jetsIntensity = newIntensity;
-            
-            // Update effects
-            this.effects.jets.setIntensity(newIntensity);
-            this.effects.steam.intensity = newIntensity * 0.6;
-            
-            // Update visual indicator
-            airLevel.style.width = `${newIntensity * 100}%`;
+            const delta = (startY - e.clientY) / 200;
+            updateAirIntensity(startIntensity + delta);
         });
 
         window.addEventListener('mouseup', () => {
@@ -351,8 +451,42 @@ class HotTubTalk extends HTMLElement {
             document.body.style.cursor = '';
         });
 
-        // Initialize air level
-        airLevel.style.width = `${this.options.rippleIntensity * 100}%`;
+        // Initialize air knob position
+        updateAirIntensity(this.options.rippleIntensity);
+
+        // Fix the control functionality
+        this.shadowRoot.querySelectorAll('.control-knob').forEach(knob => {
+            knob.addEventListener('click', () => {
+                const control = knob.dataset.control;
+                const isActive = knob.dataset.active === 'true';
+                const newState = !isActive;
+                
+                knob.dataset.active = newState.toString();
+                
+                switch(control) {
+                    case 'wobble':
+                        this.options.wobbleIntensity = newState ? 0.5 : 0;
+                        if (this.effects.jets) {
+                            this.effects.jets.setWobble(this.options.wobbleIntensity);
+                            this.effects.bubbles.setWobble(this.options.wobbleIntensity);
+                        }
+                        break;
+                    case 'steam':
+                        this.effects.steam.intensity = newState ? 0.6 : 0;
+                        break;
+                    case 'jets':
+                        if (this.effects.jets) {
+                            this.effects.jets.jets.forEach(jet => {
+                                jet.active = newState;
+                            });
+                        }
+                        break;
+                }
+            });
+        });
+
+        // Initialize controls with current state
+        this.updateControlStates();
     }
 }
 

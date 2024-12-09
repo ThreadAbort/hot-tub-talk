@@ -125,17 +125,31 @@ hot-tub-talk.custom-styled {
                 Note: This section demonstrates the CSS-only fallback mode when WebGL is not available.
             </div>
         </section>
+
+        <!-- Examples of usage -->
+        <hot-tub-talk 
+            stars 
+            steam 
+            jets 
+            wobble 
+            intensity="0.8">
+            Fully activated hot tub!
+        </hot-tub-talk>
+
+        <hot-tub-talk 
+            jets="true" 
+            steam="true">
+            Just jets and steam!
+        </hot-tub-talk>
+
+        <hot-tub-talk>
+            Basic hot tub, no effects active by default
+        </hot-tub-talk>
     </main>
 
     <!-- Demo controls -->
     <div class="demo-controls">
         <button id="toggleNight">🌙 Toggle Night Mode</button>
-        <button id="toggleSteam">💨 Toggle Steam</button>
-        <button id="toggleJets">🌀 Toggle Jets</button>
-        <div class="slider-control">
-            <label for="rippleIntensity">🌊 Ripple Intensity</label>
-            <input type="range" id="rippleIntensity" min="0" max="100" value="50">
-        </div>
         <div class="performance-stats">
             <span>FPS: <span id="fpsCounter">60</span></span>
         </div>
