@@ -1,6 +1,7 @@
 # 🛁 Hot Tub Talk
 
-A delightful web component for embedding hot-tub-style conversations in your HTML and Markdown documents. Perfect for sharing wild thoughts and ideas in a bubbly, swirling hot tub UI. 
+A delightful web component for embedding hot-tub-style conversations in your HTML and * Markdown documents. Perfect for sharing wild thoughts and ideas in a bubbly, swirling hot tub UI. 
+* Markdown is not ready
 
 ## ✨ Features
 
@@ -12,7 +13,9 @@ A delightful web component for embedding hot-tub-style conversations in your HTM
 - ⚡ Optimized performance with hardware acceleration
 - 🎨 Customizable appearance and behavior
 
-![alt text](demo/image.png)
+
+
+![Demo Page](demo/image.png)
 
 ## 📦 Installation
 
@@ -40,18 +43,6 @@ npm install hot-tub-talk
 </hot-tub-talk>
 ```
 
-### In Markdown
-
-```markdown
-
-```hot-tub-talk
-What if our dreams are glimpses into parallel universes? 😴
-Evidence:
-
-- That weird dream where you're late for a test 📚
-- Flying dreams (past lives as birds?) 🦅
-- Dream characters with their own agendas 🤔
-```
 
 ### In React
 
