@@ -154,24 +154,31 @@ class HotTubTalk extends HTMLElement {
                     background: var(--hot-tub-talk-background, rgba(30, 136, 229, 0.15));
                     border-radius: var(--hot-tub-talk-border-radius, 12px);
                     padding: 20px;
+                    padding-right: 80px; /* Make room for controls */
                     color: var(--hot-tub-talk-text-color, white);
                     min-height: 100px;
-                    overflow: hidden;
+                    overflow: visible; /* Allow controls to be visible outside */
                 }
 
                 /* Control panel */
                 .tub-controls {
                     position: absolute;
-                    right: -70px;
+                    right: 10px;  /* Move controls inside */
                     top: 50%;
                     transform: translateY(-50%);
                     display: flex;
                     flex-direction: column;
                     gap: 15px;
-                    background: rgba(0, 0, 0, 0.4);
-                    padding: 10px;
+                    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+                    padding: 12px;
                     border-radius: 15px;
-                    backdrop-filter: blur(5px);
+                    box-shadow: 
+                        0 2px 10px rgba(0,0,0,0.3),
+                        inset 0 1px 1px rgba(255,255,255,0.1);
+                }
+
+                .control {
+                    text-align: center;
                 }
 
                 .control-knob {
@@ -183,7 +190,13 @@ class HotTubTalk extends HTMLElement {
                     cursor: pointer;
                     position: relative;
                     transition: all 0.3s ease;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    box-shadow: 
+                        0 2px 5px rgba(0,0,0,0.2),
+                        inset 0 1px 1px rgba(255,255,255,0.1);
+                }
+
+                .control-knob.air-control {
+                    background: linear-gradient(145deg, #1e88e5, #1565c0);
                 }
 
                 .control-knob:hover {
@@ -209,6 +222,10 @@ class HotTubTalk extends HTMLElement {
                     transition: transform 0.3s ease;
                 }
 
+                .air-control::after {
+                    background: white;
+                }
+
                 .control-knob[data-active="true"]::after {
                     transform: translate(-50%, -50%) rotate(180deg);
                 }
@@ -219,6 +236,23 @@ class HotTubTalk extends HTMLElement {
                     text-align: center;
                     margin-top: 5px;
                     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+                }
+
+                /* Air intensity indicator */
+                .air-level {
+                    width: 100%;
+                    height: 4px;
+                    background: #333;
+                    border-radius: 2px;
+                    margin-top: 5px;
+                    overflow: hidden;
+                }
+
+                .air-level-fill {
+                    height: 100%;
+                    background: #64b5f6;
+                    width: var(--air-level, 50%);
+                    transition: width 0.3s ease;
                 }
 
                 canvas {
@@ -255,6 +289,14 @@ class HotTubTalk extends HTMLElement {
                         <div class="control-label">💨 Steam</div>
                     </div>
                 </div>
+                <div class="control">
+                    <div class="control-knob air-control" data-control="air" data-active="true">
+                        <div class="control-label">💨 Air</div>
+                    </div>
+                    <div class="air-level">
+                        <div class="air-level-fill"></div>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -277,6 +319,36 @@ class HotTubTalk extends HTMLElement {
                 }
             });
         });
+
+        // Add air control functionality
+        const airKnob = this.shadowRoot.querySelector('[data-control="air"]');
+        const airLevel = this.shadowRoot.querySelector('.air-level-fill');
+        let isDragging = false;
+        let startY = 0;
+        let startIntensity = 0.5;
+
+        airKnob.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startY = e.clientY;
+            startIntensity = this.options.rippleIntensity;
+            document.body.style.cursor = 'ns-resize';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const delta = (startY - e.clientY) / 100;
+            const newIntensity = Math.max(0, Math.min(1, startIntensity + delta));
+            this.configure({ rippleIntensity: newIntensity });
+            airLevel.style.setProperty('--air-level', `${newIntensity * 100}%`);
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.style.cursor = '';
+        });
+
+        // Initialize air level
+        airLevel.style.setProperty('--air-level', `${this.options.rippleIntensity * 100}%`);
     }
 }
 
