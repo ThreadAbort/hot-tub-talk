@@ -30,13 +30,37 @@ export class StarField {
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         
         this.stars.forEach(star => {
-            const opacity = (Math.sin(time * 0.001 * star.twinkleSpeed) + 1) / 2;
+            // Initialize twinkle state for star if not exists
+            if (!star.nextTwinkle) {
+                star.nextTwinkle = time + Math.random() * 4000 + 1000; // Random 1-5 seconds
+                star.isTwinkling = false;
+                star.twinkleStart = 0;
+            }
+
+            // Check if it's time to start twinkling
+            if (time >= star.nextTwinkle && !star.isTwinkling) {
+                star.isTwinkling = true;
+                star.twinkleStart = time;
+            }
+
+            // Handle twinkling animation
+            let opacity = 1;
+            if (star.isTwinkling) {
+                const twinkleTime = time - star.twinkleStart;
+                if (twinkleTime <= 800) {  // 0.4 seconds twinkle duration 
+                    opacity = Math.sin((twinkleTime / 800) * Math.PI) + .6;
+                } else {
+                    star.isTwinkling = false;
+                    star.nextTwinkle = time + Math.random() * 4000 + 1000; // Set next twinkle
+                }
+            }
+
             this.ctx.globalAlpha = opacity;
             this.ctx.beginPath();
             this.ctx.arc(
                 star.x * this.canvas.width,
                 star.y * this.canvas.height,
-                star.size,
+                star.size * (Math.sin(time * 0.001) * 0.1 + 1) / 3, // Much slower size pulsing
                 0,
                 Math.PI * 2
             );
@@ -104,7 +128,7 @@ export class JetSystem {
         this.mouseY = 0;
         this.followJet = null;
         this.intensity = 1;  // Default intensity
-        this.wobbleIntensity = 0.5;
+        this.wobbleIntensity = .5;
     }
 
     setIntensity(value) {
@@ -154,13 +178,13 @@ export class JetSystem {
                 // Number of particles scales with intensity
                 const particleCount = Math.floor(3 * this.intensity) + 1;
                 for (let i = 0; i < particleCount; i++) {
-                    const waveOffset = Math.sin(Date.now() * 0.003) * 0.2 * this.wobbleIntensity;
+                    const waveOffset = Math.sin(Date.now() * 0.023) * 0.2 * this.wobbleIntensity;
                     this.particles.push({
                         x: jet.x,
                         y: jet.y,
                         speed: (Math.random() * 3 + 4) * this.intensity,
-                        angle: jet.angle + waveOffset + (Math.random() - 0.5) * 0.3 * this.wobbleIntensity,
-                        life: 1,
+                        angle: jet.angle + waveOffset + (Math.random() - 0.8) * 0.3 * this.wobbleIntensity,
+                        life: .12 * Math.random(),
                         size: (Math.random() * 4 + 2) * this.intensity
                     });
                 }

@@ -1,7 +1,6 @@
 // HotTubTalk.js - A delightful web component for hot-tub style conversations
 // Created by Hue & Aye - Making the web a more relaxing place! 🛁
 
-import { step } from 'three/webgpu';
 import { StarField, SteamEffect, JetSystem, BubbleSystem } from '../utils/effects.js';
 
 class HotTubTalk extends HTMLElement {
@@ -26,7 +25,8 @@ class HotTubTalk extends HTMLElement {
             jetsIntensity: 0.5,
             ripple: true,
             rippleIntensity: 0.5,
-            wobbleIntensity: 0.5
+            wobbleIntensity: 0.5,
+            starAnimationFrequency: 2,
         };
 
         // Initialize effects
@@ -119,9 +119,10 @@ class HotTubTalk extends HTMLElement {
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
     }
-
+    
     animate(time) {
         if (!this.isConnected || !this.ctx) return;
+        
 
         // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -131,7 +132,10 @@ class HotTubTalk extends HTMLElement {
         this.lastTime = time;
 
         if (this.effects.stars && this.classList.contains('starry')) {
+            // Only update stars at specified frequency intervals to optimize performance
+            
             this.effects.stars.update(time);
+        
         }
 
         if (this.effects.steam.intensity > 0) {
