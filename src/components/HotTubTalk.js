@@ -3,14 +3,7 @@
 
 import { StarField, SteamEffect, JetSystem, BubbleSystem } from '../utils/effects.js';
 
-// Add at the top of the file
-let globalStarField = null;
-
 class HotTubTalk extends HTMLElement {
-    static {
-        // Create a single StarField instance for all components
-        globalStarField = new StarField();
-    }
     constructor() {
         super();
         
@@ -70,6 +63,8 @@ class HotTubTalk extends HTMLElement {
         this.canvas = this.shadowRoot.querySelector('canvas');
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
+            
+            // Create StarField with the canvas
             this.effects.stars = new StarField(this.canvas);
             
             // Add multiple jets for better effect

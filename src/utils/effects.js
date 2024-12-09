@@ -4,6 +4,9 @@
 export class StarField {
     constructor(canvas) {
         this.canvas = canvas;
+        if (canvas) {
+            this.ctx = canvas.getContext('2d');
+        }
         this.stars = [];
         this.initStars();
     }
@@ -21,6 +24,8 @@ export class StarField {
     }
 
     update(time) {
+        if (!this.ctx || !this.canvas) return;  // Guard clause
+        
         this.ctx.save();
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         
